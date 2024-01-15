@@ -1,7 +1,8 @@
 package todo
 
 import (
-	"fmt"
+	"strconv"
+	"strings"
 )
 
 type Todo struct {
@@ -10,15 +11,21 @@ type Todo struct {
     Description string
     IsCompleted bool
     DueBy int64
+    Priority int8
 }
 
-func (todo *Todo) ToString() string {
-    var isCompleted int
-    if todo.IsCompleted {
-        isCompleted = 1
-    } else {
-        isCompleted = 0
+func NewTodo() *Todo {
+    return &Todo{-1, "", "", false, -1, 5}
+}
+
+func (t *Todo) String() string {
+    fields := []string{
+        strconv.FormatInt(t.Id, 10),
+        t.Name,
+        t.Description,
+        strconv.FormatBool(t.IsCompleted),
+        strconv.FormatInt(t.DueBy, 10),
+        strconv.FormatInt(int64(t.Priority), 10),
     }
-    return fmt.Sprintf("%ld::%s::%s::%d::%ld", todo.Id, todo.Name,
-        todo.Description, isCompleted, todo.DueBy)
+    return strings.Join(fields, "::")
 }
