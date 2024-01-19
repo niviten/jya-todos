@@ -2,22 +2,31 @@ package todo
 
 import (
 	"context"
-	"fmt"
 	"jya-todos/src/connection"
 )
 
-func Create(conn *connection.RedisConnection, todo *Todo) error {
-    ctx := context.Background()
-    var todoId int64 
-    var err error
-    todoId, err = conn.Client.Incr(ctx, "todo_id").Result()
+func Create(todo *Todo) (int64, error) {
+    db, err := connection.GetDBConnection()
     if err != nil {
-        return err
+        return -1, err
     }
-    todo.Id = todoId
-    fmt.Println("todo:", todo)
-    key := fmt.Sprintf("%s_%d", "todo", todo.Id)
-    value := todo.String()
-    err = conn.Client.Set(ctx, key, value, 0).Err()
-    return err
+    query := `
+    INSERT INTO Todo (
+        todo_title, todo_description, created_at, due_by, priority
+    ) VALUES (?, ?, ?, ?, ?)
+    `
+    ctx := context.TODO()
+    result, err := db.ExecContext(
+        ctx,
+        query,
+        todo.Title,
+        todo.Description,
+        todo.CreatedAt,
+        todo.DueBy,
+        todo.Priority,
+        )
+    if err != nil {
+        return -1, err
+    }
+    return result.LastInsertId()
 }
