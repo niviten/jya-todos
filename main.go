@@ -1,26 +1,19 @@
 package main
 
 import (
-	"fmt"
-	"jya-todos/src/components/todo"
-	"jya-todos/src/utils"
+	todoAPI "jya-todos/src/api/todo"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func main() {
-    t := todo.NewTodo()
-    t.Title = "Write code"
-    t.Description = "Write go code to work on that project"
-    t.CreatedAt = utils.GetCurrentTimeInEpoch()
-    t.DueBy = utils.GetCurrentTimeInEpoch() + (2 * 24 * 60 * 60 * 1000)
-    t.Priority = 1
+	app := fiber.New()
 
-    todoId, err := todo.Create(t)
-    if err != nil {
-        fmt.Println("Error occurred while creating todo", err)
-        return
-    }
+	app.Get("/test", func(c *fiber.Ctx) error {
+		return c.SendString("using fiber")
+	})
 
-    fmt.Println("Successfully todo created:", todoId)
+	app.Post("/api/todo", todoAPI.Create)
 
-    fmt.Println("___done")
+	app.Listen("0.0.0.0:7000")
 }
