@@ -13,7 +13,9 @@ func main() {
 		return c.SendString("using fiber")
 	})
 
-	app.Post("/api/todo", todoAPI.Create)
+    api := app.Group("/api")
+
+    todoAPI.AddRoutes(api)
 
 	app.Listen("0.0.0.0:7000")
 }
